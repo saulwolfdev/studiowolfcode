@@ -5,3 +5,4 @@ node_modules/
 .next/
 .netlify/
 npm-debug.log*
+*.tsbuildinfo

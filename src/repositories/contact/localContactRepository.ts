@@ -6,8 +6,7 @@ import type {
 export class LocalContactRepository implements ContactRepository {
   async submit(_input: ContactSubmission): Promise<void> {
     throw new Error(
-      "The contact form is not connected yet. Please use the published email address.",
+      "El formulario todavía no está conectado. Utilizá el correo publicado cuando esté disponible.",
     );
   }
 }
-

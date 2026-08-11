@@ -1,18 +1,7 @@
 export interface Profile {
   name: string;
-  brand: string;
-  role: string;
-  positioning: string;
+  headline: string;
   location: string;
+  linkedin: string;
   stack: string[];
-  about: string[];
-  companies: string[];
-  education: string;
-}
-
-export interface CapabilityGroup {
-  number: string;
-  title: string;
-  note?: string;
-  items: string[];
 }
