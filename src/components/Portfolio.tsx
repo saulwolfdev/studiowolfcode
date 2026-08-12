@@ -1,14 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Command } from "cmdk";
-import { ArrowRight, Bot, Box, Braces, Check, ChevronRight, CircleDot, Code2, Command as CommandIcon, Copy, Cpu, Database, Github, Layers3, Menu, MousePointer2, Network, Play, Search, Sparkles, Terminal, WandSparkles, X, Zap } from "lucide-react";
+import { ArrowRight, Bot, Box, Braces, Check, ChevronRight, CircleDot, Code2, Command as CommandIcon, Copy, Cpu, Database, Github, Layers3, Menu, Moon, MousePointer2, Network, Play, Search, Sparkles, Sun, Terminal, WandSparkles, X, Zap } from "lucide-react";
 import type { Project } from "@/types/project";
 import { profile } from "@/content/profile";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Badge, Button, Card, Dialog, DialogContent, DialogTitle, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/primitives";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -66,22 +72,106 @@ export function Portfolio({ projectContent }: { projectContent: Project[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => { const handler = (event: KeyboardEvent) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setCommandOpen(true); } }; addEventListener("keydown", handler); return () => removeEventListener("keydown", handler); }, []);
+  useLayoutEffect(() => {
+    const savedTheme = localStorage.getItem("studiowolfcode-theme");
+    const preferredTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    setTheme(savedTheme === "dark" || savedTheme === "light" ? savedTheme : preferredTheme);
+  }, []);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
   useGSAP(() => {
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
-    gsap.from(".x-hero-copy > *", { opacity: 0, y: 35, filter: "blur(10px)", duration: .9, stagger: .11, ease: "power3.out" });
-    gsap.from(".float-card", { opacity: 0, scale: .84, y: 30, duration: 1.1, stagger: .12, ease: "back.out(1.3)", delay: .25 });
-    gsap.to(".float-card", { y: "-=10", duration: 2.8, repeat: -1, yoyo: true, stagger: .3, ease: "sine.inOut" });
-    gsap.utils.toArray<HTMLElement>(".x-reveal").forEach((element) => gsap.from(element, { opacity: 0, y: 50, filter: "blur(8px)", duration: .9, scrollTrigger: { trigger: element, start: "top 88%" } }));
-    gsap.utils.toArray<HTMLElement>(".x-project").forEach((element, i) => gsap.from(element, { opacity: 0, y: 90, rotateX: 5, duration: 1, ease: "power3.out", scrollTrigger: { trigger: element, start: "top 88%" }, delay: i * .05 }));
+    const mobile = matchMedia("(max-width: 760px)").matches;
+    const cleanups: Array<() => void> = [];
+
+    if (mobile) {
+      gsap.fromTo(".x-hero h1", { opacity: .45, y: 52, scale: .9, rotate: -2 }, { opacity: 1, y: 0, scale: 1, rotate: 0, duration: .95, ease: "expo.out" });
+      gsap.from(".x-hero h1 span", { x: -42, duration: 1.05, ease: "power4.out", delay: .08 });
+      gsap.from(".hero-lead, .hero-tech, .hero-cta", { opacity: .35, y: 28, duration: .7, stagger: .09, ease: "power3.out", delay: .15 });
+    } else {
+      gsap.timeline({ defaults: { ease: "expo.out" } })
+        .from(".x-hero-copy > .ui-badge", { opacity: 0, y: -35, scale: .65, duration: .8 })
+        .from(".hero-name", { opacity: 0, letterSpacing: ".55em", duration: .8 }, "<.1")
+        .from(".x-hero h1", { opacity: 0, y: 110, scale: .82, rotateX: -24, filter: "blur(16px)", transformOrigin: "50% 100%", duration: 1.25 }, "<.05")
+        .from(".x-hero h1 span", { x: -130, skewX: -8, duration: 1.15 }, "<.25")
+        .from(".hero-lead", { opacity: 0, y: 45, filter: "blur(8px)", duration: .8 }, "<.25")
+        .from(".hero-tech span", { opacity: 0, y: 25, scale: .55, stagger: .08, duration: .55, ease: "back.out(1.8)" }, "<.15")
+        .from(".hero-cta", { opacity: 0, y: 42, scale: .86, rotate: 2, duration: .7, ease: "back.out(1.5)" }, "<.15")
+        .from(".hero-proof > div", { opacity: 0, y: 50, scale: .72, stagger: .1, duration: .7, ease: "back.out(1.5)" }, "<.1");
+    }
+
+    gsap.to(".hero-grid", { backgroundPosition: "0 180px", scale: 1.12, ease: "none", scrollTrigger: { trigger: ".x-hero", start: "top top", end: "bottom top", scrub: 1.1 } });
+    gsap.to(".x-hero-copy", { y: mobile ? -48 : -125, scale: mobile ? .98 : .91, opacity: mobile ? .55 : .16, ease: "none", scrollTrigger: { trigger: ".x-hero", start: "55% center", end: "bottom top", scrub: 1 } });
+
+    gsap.utils.toArray<HTMLElement>(".x-section-label").forEach((label) => {
+      const line = label.querySelector("i");
+      const copy = label.querySelectorAll("span, p");
+      if (line) gsap.from(line, { scaleX: 0, transformOrigin: "left center", duration: 1.35, ease: "power4.inOut", scrollTrigger: { trigger: label, start: "top 88%" } });
+      gsap.from(copy, { opacity: 0, x: -35, stagger: .12, duration: .7, ease: "power3.out", scrollTrigger: { trigger: label, start: "top 88%" } });
+    });
+
+    gsap.utils.toArray<HTMLElement>(".x-section-head, .lab-heading, .about-content").forEach((block) => {
+      const heading = block.querySelector("h2");
+      const paragraph = block.querySelector("p");
+      if (heading) gsap.from(heading, { opacity: .08, y: mobile ? 65 : 115, rotateX: mobile ? -8 : -22, scale: .92, transformOrigin: "50% 100%", duration: mobile ? .8 : 1.2, ease: "expo.out", scrollTrigger: { trigger: block, start: "top 86%" } });
+      if (paragraph) gsap.from(paragraph, { opacity: 0, y: 35, duration: .75, ease: "power3.out", scrollTrigger: { trigger: block, start: "top 80%" } });
+    });
+
+    gsap.utils.toArray<HTMLElement>(".x-project").forEach((project, index) => {
+      const stage = project.querySelector<HTMLElement>(".project-stage");
+      const detail = project.querySelector<HTMLElement>(".project-detail");
+      const mockup = project.querySelector<HTMLElement>(".project-mockup, .mock-dashboard, .mock-order, .mock-agent");
+      const direction = index % 2 === 0 ? -1 : 1;
+      if (stage) gsap.from(stage, { opacity: .12, x: mobile ? direction * 55 : direction * 170, y: mobile ? 55 : 90, scale: .82, rotateY: mobile ? 0 : direction * 12, transformPerspective: 1000, duration: mobile ? .85 : 1.25, ease: "expo.out", scrollTrigger: { trigger: project, start: "top 86%" } });
+      if (detail) gsap.from(detail, { opacity: 0, x: mobile ? direction * -40 : direction * -120, y: 45, duration: mobile ? .75 : 1.05, ease: "power4.out", scrollTrigger: { trigger: project, start: "top 82%" } });
+      if (mockup) gsap.to(mockup, { y: mobile ? -22 : -58, scale: mobile ? 1.02 : 1.06, ease: "none", scrollTrigger: { trigger: project, start: "top bottom", end: "bottom top", scrub: 1.2 } });
+
+      if (stage && !mobile) {
+        const rotateXTo = gsap.quickTo(stage, "rotationX", { duration: .45, ease: "power3.out" });
+        const rotateYTo = gsap.quickTo(stage, "rotationY", { duration: .45, ease: "power3.out" });
+        const onMove = (event: PointerEvent) => {
+          const rect = stage.getBoundingClientRect();
+          rotateYTo(((event.clientX - rect.left) / rect.width - .5) * 9);
+          rotateXTo(-((event.clientY - rect.top) / rect.height - .5) * 7);
+        };
+        const onLeave = () => { rotateXTo(0); rotateYTo(0); };
+        stage.addEventListener("pointermove", onMove);
+        stage.addEventListener("pointerleave", onLeave);
+        cleanups.push(() => { stage.removeEventListener("pointermove", onMove); stage.removeEventListener("pointerleave", onLeave); });
+      }
+    });
+
+    gsap.from(".tech-card", { opacity: 0, y: 95, scale: .78, rotateX: -28, transformOrigin: "50% 100%", stagger: .11, duration: .85, ease: "back.out(1.45)", scrollTrigger: { trigger: ".stack-tabs", start: "top 78%" } });
+    gsap.from(".lab-app", { opacity: .15, scale: .86, clipPath: "inset(0 48% 0 48% round 24px)", duration: 1.35, ease: "expo.inOut", scrollTrigger: { trigger: ".lab-app", start: "top 84%" } });
+    gsap.from(".workflow-step", { opacity: 0, x: -65, stagger: .14, duration: .7, ease: "power4.out", scrollTrigger: { trigger: ".workflow", start: "top 78%" } });
+    gsap.from(".identity-visual", { opacity: .15, x: mobile ? -45 : -100, rotate: mobile ? -2 : -6, scale: .88, duration: 1.15, ease: "expo.out", scrollTrigger: { trigger: ".identity-visual", start: "top 84%" } });
+    gsap.from(".ui-accordion-item", { opacity: 0, x: mobile ? 45 : 110, stagger: .1, duration: .75, ease: "power4.out", scrollTrigger: { trigger: ".experience-list", start: "top 82%" } });
+    gsap.from(".x-contact h2", { opacity: .12, y: 135, scale: .68, rotateX: -18, transformOrigin: "50% 100%", duration: 1.25, ease: "expo.out", scrollTrigger: { trigger: ".x-contact", start: "top 72%" } });
+    gsap.from(".contact-actions .ui-button", { opacity: 0, y: 45, scale: .72, stagger: .13, duration: .7, ease: "back.out(1.7)", scrollTrigger: { trigger: ".contact-actions", start: "top 88%" } });
+    gsap.to(".contact-grid-bg", { backgroundPosition: "140px -100px", scale: 1.15, ease: "none", scrollTrigger: { trigger: ".x-contact", start: "top bottom", end: "bottom bottom", scrub: 1.2 } });
+
+    if (!mobile) gsap.to(".x-nav", { height: 64, ease: "none", scrollTrigger: { trigger: ".lab-site", start: "top top", end: "+=260", scrub: 1 } });
+    ScrollTrigger.refresh();
+
+    return () => cleanups.forEach((cleanup) => cleanup());
   }, { scope: root });
 
   const copyContact = async () => { await navigator.clipboard.writeText("Datos de contacto pendientes de verificación"); setCopied(true); setTimeout(() => setCopied(false), 1600); };
-  return <TooltipProvider delayDuration={200}><div className="lab-site" ref={root}>
+  const toggleTheme = () => setTheme((current) => {
+    const nextTheme = current === "light" ? "dark" : "light";
+    localStorage.setItem("studiowolfcode-theme", nextTheme);
+    return nextTheme;
+  });
+
+  return <TooltipProvider delayDuration={200}><div className="lab-site" data-theme={theme} ref={root}>
     <div className="x-noise"/><div className="x-spotlight"/>
-    <header className="x-nav"><a href="#top" className="x-logo"><WolfMark/><span>StudioWolfCode<small>LABORATORIO DE INGENIERÍA</small></span></a><nav className={menuOpen ? "open" : ""}>{[["Proyectos","work"],["Stack","stack"],["Sobre mí","about"],["Lab IA","lab"],["Contacto","contact"]].map(([label,id]) => <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>{label}</a>)}<button className="command-trigger" onClick={() => setCommandOpen(true)}><CommandIcon size={13}/> Navegación <kbd>⌘K</kbd></button></nav><button className="x-menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="Alternar navegación">{menuOpen ? <X/> : <Menu/>}</button></header>
+    <header className="x-nav"><a href="#top" className="x-logo"><WolfMark/><span>StudioWolfCode<small>LABORATORIO DE INGENIERÍA</small></span></a><nav className={menuOpen ? "open" : ""}>{[["Proyectos","work"],["Stack","stack"],["Sobre mí","about"],["Lab IA","lab"],["Contacto","contact"]].map(([label,id]) => <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>{label}</a>)}<button className="command-trigger" onClick={() => setCommandOpen(true)}><CommandIcon size={13}/> Navegación <kbd>⌘K</kbd></button></nav><div className="nav-actions"><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "dark" ? "Activar modo claro" : "Activar modo oscuro"} title={theme === "dark" ? "Modo claro" : "Modo oscuro"}>{theme === "dark" ? <Sun/> : <Moon/>}</button><button className="x-menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="Alternar navegación">{menuOpen ? <X/> : <Menu/>}</button></div></header>
     <CommandPalette open={commandOpen} setOpen={setCommandOpen}/>
     <main>
       <section className="x-hero" id="top"><div className="hero-grid"/><div className="x-hero-copy"><Badge><i className="live-dot"/> DISPONIBLE PARA OPORTUNIDADES SELECCIONADAS</Badge><p className="hero-name">{profile.name}</p><h1>Diseño productos,<br/><span>construyo la interfaz.</span></h1><p className="hero-lead">Senior Product Designer y Frontend Engineer. Conecto estrategia, UX, Design Systems y código para convertir problemas complejos en productos claros, accesibles y escalables.</p><div className="hero-tech">{profile.stack.map(item => <span key={item}>{item}</span>)}</div><div className="hero-cta"><Button asChild><a href="#work">Explorar proyectos <ArrowRight/></a></Button><Button asChild variant="outline"><a href={profile.linkedin} target="_blank" rel="noreferrer">Ver perfil en LinkedIn <ArrowRight/></a></Button></div><div className="hero-proof"><div><strong>12+</strong><span>Años entre<br/>diseño y tecnología</span></div><div><strong>05</strong><span>Etapas profesionales<br/>seleccionadas</span></div><div><strong>IA</strong><span>Foco actual:<br/>interfaces agénticas</span></div></div></div><HeroComposition/><div className="scroll-cue"><span>DESPLAZÁ PARA EXPLORAR</span><i/></div></section>
