@@ -11,32 +11,25 @@ import "./experimental.css";
 import "./fixes.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://studiowolfcode.netlify.app"),
+  metadataBase: new URL("https://studiowolfcodedev.netlify.app"),
   title: {
-    default: "StudioWolfCode — Senior Product Designer y Frontend Engineer",
+    default: "Saúl Alejos Garay — Frontend Engineer · Product UI · AI",
     template: "%s — StudioWolfCode",
   },
-  description:
-    "Saul Garay diseña y construye productos digitales combinando Product Design, UX, Frontend e Inteligencia Artificial.",
+  description: "Senior Frontend Engineer focused on Product UI, Design Systems, SaaS interfaces and emerging AI experiences.",
   openGraph: {
-    title: "StudioWolfCode — Senior Product Designer y Frontend Engineer",
-    description: "Product Design, Design Systems e ingeniería frontend por Saul Garay.",
+    title: "Saúl Alejos Garay — Frontend Engineer · Product UI · AI",
+    description: "Frontend engineering for complex products, design systems and emerging AI interfaces.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "StudioWolfCode — Senior Product Designer y Frontend Engineer",
-    description: "Product Design, Design Systems e ingeniería frontend por Saul Garay.",
+    title: "Saúl Alejos Garay — Frontend Engineer · Product UI · AI",
+    description: "Frontend engineering for complex products, design systems and emerging AI interfaces.",
   },
   alternates: { canonical: "/" },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="es">
-      <body>{children}</body>
-    </html>
-  );
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="en"><body>{children}</body></html>;
 }
