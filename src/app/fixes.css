@@ -346,6 +346,29 @@ body { font-size: 16px; line-height: 1.65; }
 @media(max-width:1050px){.system-showcase{grid-template-columns:1fr}.pillar-row{grid-template-columns:50px 1fr 1.2fr}.pillar-row code{display:none}}
 @media(max-width:760px){.pillar-row{grid-template-columns:34px 1fr;gap:16px;padding:24px 0}.pillar-row p{grid-column:2}.component-specimen{min-height:auto}.token-strip code{display:none}.specimen-controls{flex-wrap:wrap}}
 
+/* Restrained card motion: quiet elevation, no tilt or zoom. */
+.project-stage,
+.tech-card,
+.pillar-row,
+.ui-card {
+  transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.project-stage:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 26px 60px rgba(30, 42, 31, .11);
+}
+.project-stage:hover .mock-dashboard { transform: perspective(900px) rotateX(5deg) rotateY(-5deg); }
+.project-stage:hover .order-phone { transform: translateX(-50%) rotate(2deg); }
+.project-stage:hover .mock-agent,
+.project-stage:hover .project-glow { transform: none; }
+.tech-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(30, 42, 31, .08);
+}
+.pillar-row:hover {
+  padding-inline: 8px;
+}
+
 .x-stack,
 .x-experience {
   background: #f1f4ee;

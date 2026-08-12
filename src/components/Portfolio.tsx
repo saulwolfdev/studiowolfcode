@@ -135,37 +135,20 @@ export function Portfolio({ projectContent }: { projectContent: Project[] }) {
       if (paragraph) gsap.from(paragraph, { opacity: 0, y: 35, duration: .75, ease: "power3.out", scrollTrigger: { trigger: block, start: "top 80%" } });
     });
 
-    gsap.utils.toArray<HTMLElement>(".x-project").forEach((project, index) => {
+    gsap.utils.toArray<HTMLElement>(".x-project").forEach((project) => {
       const stage = project.querySelector<HTMLElement>(".project-stage");
       const detail = project.querySelector<HTMLElement>(".project-detail");
-      const mockup = project.querySelector<HTMLElement>(".project-mockup, .mock-dashboard, .mock-order, .mock-agent");
-      const direction = index % 2 === 0 ? -1 : 1;
-      if (stage) gsap.from(stage, { opacity: .12, x: mobile ? direction * 55 : direction * 170, y: mobile ? 55 : 90, scale: .82, rotateY: mobile ? 0 : direction * 12, transformPerspective: 1000, duration: mobile ? .85 : 1.25, ease: "expo.out", scrollTrigger: { trigger: project, start: "top 86%" } });
-      if (detail) gsap.from(detail, { opacity: 0, x: mobile ? direction * -40 : direction * -120, y: 45, duration: mobile ? .75 : 1.05, ease: "power4.out", scrollTrigger: { trigger: project, start: "top 82%" } });
-      if (mockup) gsap.to(mockup, { y: mobile ? -22 : -58, scale: mobile ? 1.02 : 1.06, ease: "none", scrollTrigger: { trigger: project, start: "top bottom", end: "bottom top", scrub: 1.2 } });
-
-      if (stage && !mobile) {
-        const rotateXTo = gsap.quickTo(stage, "rotationX", { duration: .45, ease: "power3.out" });
-        const rotateYTo = gsap.quickTo(stage, "rotationY", { duration: .45, ease: "power3.out" });
-        const onMove = (event: PointerEvent) => {
-          const rect = stage.getBoundingClientRect();
-          rotateYTo(((event.clientX - rect.left) / rect.width - .5) * 9);
-          rotateXTo(-((event.clientY - rect.top) / rect.height - .5) * 7);
-        };
-        const onLeave = () => { rotateXTo(0); rotateYTo(0); };
-        stage.addEventListener("pointermove", onMove);
-        stage.addEventListener("pointerleave", onLeave);
-        cleanups.push(() => { stage.removeEventListener("pointermove", onMove); stage.removeEventListener("pointerleave", onLeave); });
-      }
+      if (stage) gsap.from(stage, { opacity: 0, y: 28, duration: .65, ease: "power2.out", scrollTrigger: { trigger: project, start: "top 86%" } });
+      if (detail) gsap.from(detail, { opacity: 0, y: 20, duration: .6, delay: .08, ease: "power2.out", scrollTrigger: { trigger: project, start: "top 84%" } });
     });
 
-    gsap.from(".tech-card", { opacity: 0, y: 95, scale: .78, rotateX: -28, transformOrigin: "50% 100%", stagger: .11, duration: .85, ease: "back.out(1.45)", scrollTrigger: { trigger: ".stack-tabs", start: "top 78%" } });
-    gsap.from(".lab-app", { opacity: .15, scale: .86, clipPath: "inset(0 48% 0 48% round 24px)", duration: 1.35, ease: "expo.inOut", scrollTrigger: { trigger: ".lab-app", start: "top 84%" } });
-    gsap.from(".workflow-step", { opacity: 0, x: -65, stagger: .14, duration: .7, ease: "power4.out", scrollTrigger: { trigger: ".workflow", start: "top 78%" } });
-    gsap.from(".identity-visual", { opacity: .15, x: mobile ? -45 : -100, rotate: mobile ? -2 : -6, scale: .88, duration: 1.15, ease: "expo.out", scrollTrigger: { trigger: ".identity-visual", start: "top 84%" } });
-    gsap.from(".ui-accordion-item", { opacity: 0, x: mobile ? 45 : 110, stagger: .1, duration: .75, ease: "power4.out", scrollTrigger: { trigger: ".experience-list", start: "top 82%" } });
+    gsap.from(".tech-card", { opacity: 0, y: 20, stagger: .045, duration: .5, ease: "power2.out", scrollTrigger: { trigger: ".stack-tabs", start: "top 82%" } });
+    gsap.from(".lab-app", { opacity: 0, y: 28, duration: .7, ease: "power2.out", scrollTrigger: { trigger: ".lab-app", start: "top 86%" } });
+    gsap.from(".workflow-step", { opacity: 0, y: 14, stagger: .07, duration: .45, ease: "power2.out", scrollTrigger: { trigger: ".workflow", start: "top 82%" } });
+    gsap.from(".identity-visual", { opacity: 0, y: 24, duration: .65, ease: "power2.out", scrollTrigger: { trigger: ".identity-visual", start: "top 86%" } });
+    gsap.from(".ui-accordion-item", { opacity: 0, y: 14, stagger: .045, duration: .45, ease: "power2.out", scrollTrigger: { trigger: ".experience-list", start: "top 84%" } });
     gsap.from(".x-contact h2", { opacity: .12, y: 135, scale: .68, rotateX: -18, transformOrigin: "50% 100%", duration: 1.25, ease: "expo.out", scrollTrigger: { trigger: ".x-contact", start: "top 72%" } });
-    gsap.from(".contact-actions .ui-button", { opacity: 0, y: 45, scale: .72, stagger: .13, duration: .7, ease: "back.out(1.7)", scrollTrigger: { trigger: ".contact-actions", start: "top 88%" } });
+    gsap.from(".contact-actions .ui-button", { opacity: 0, y: 12, stagger: .06, duration: .45, ease: "power2.out", scrollTrigger: { trigger: ".contact-actions", start: "top 88%" } });
     gsap.to(".contact-grid-bg", { backgroundPosition: "140px -100px", scale: 1.15, ease: "none", scrollTrigger: { trigger: ".x-contact", start: "top bottom", end: "bottom bottom", scrub: 1.2 } });
 
     if (!mobile) gsap.to(".x-nav", { height: 64, ease: "none", scrollTrigger: { trigger: ".lab-site", start: "top top", end: "+=260", scrub: 1 } });
